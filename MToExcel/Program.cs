@@ -15,7 +15,7 @@ namespace MToExcel
             };
 
             WrapperConverter wrapper = new WrapperConverter();
-            wrapper.basic = new BasicConverter();
+            //wrapper.basic = new BasicConverter();
 
             IWorkbook workbook = wrapper.ConvertToExcel<Person>(list);
 

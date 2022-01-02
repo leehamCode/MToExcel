@@ -63,23 +63,28 @@ namespace MToExcel.Converter
 
             IRow header = defaultSheet.CreateRow(0);
 
+            //设置一下表头样式,将表头设置为加粗字体
+            ICellStyle style = workbook.CreateCellStyle();
+            var Font = workbook.CreateFont();
+            Font.IsBold = true;
+            style.SetFont(Font);
+
             int i = 0;
             foreach(PropertyInfo pro in properties)
             {
-                //设置一下表头样式,将表头设置为加粗字体
-                ICellStyle style = workbook.CreateCellStyle();
-                var Font = workbook.CreateFont();
-                Font.IsBold = true;
-                style.SetFont(Font);
+                
 
-                if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在标记类型池中
+                if (WrapperConverter.IgnoreTypePool.ContainsKey(pro.PropertyType))
+                {
+                    //如果在忽略类型中就直接Continue，开始下一轮循环
+                    continue;
+                }
+
+                if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在(引用)标记类型池中
                 {
                     ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
 
-                    Type typeTemp = pro.PropertyType;
-                   
-
-                    if (refer.getIsMultiPart()) //判断是否要将引用类型拆成多列
+                    if (refer.getIsMultiPart()) //判断是否要将引用类型拆成多列 :多列
                     {
                         PropertyInfo[] pros = pro.PropertyType.GetProperties();
                         
@@ -95,6 +100,11 @@ namespace MToExcel.Converter
                             i++;
                         }
                         //如果打印了引用类型的属性，需要Continue跳一下循环，避免再次打印该类型（Type）的信息
+                        continue;
+                    }
+                    else  //~：单列,打印单列表头的话，不需要额外增加列数，所以直接退出循环即可
+                    {
+                        header.CreateCell(i).SetCellValue(Convert.ToString(pro.Name));
                         continue;
                     }
                 }
@@ -114,12 +124,19 @@ namespace MToExcel.Converter
                 int ColumnNumber = 0;     //控制列增加的变量
                 foreach (PropertyInfo pro in properties)
                 {
+                    Type temp = pro.PropertyType;
 
-                    if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在标记类型池中
+                    if (WrapperConverter.IgnoreTypePool.ContainsKey(pro.PropertyType))
+                    {
+                        //如果在表体上的话，这个循环就不需要了，可以直接退出这一层循环
+                        continue;
+                    }
+
+                    if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在（引用）标记类型池中
                     {
                         ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
 
-                        if (refer.getIsMultiPart())
+                        if (refer.getIsMultiPart())   //多列打印引用类型的值
                         {
                             PropertyInfo[] pros = pro.PropertyType.GetProperties();
                             
@@ -136,6 +153,28 @@ namespace MToExcel.Converter
                                 ColumnNumber++;
                             }
                             
+                        }
+                        else
+                        {
+                            PropertyInfo[] pros = pro.PropertyType.GetProperties();
+
+                            //单列的话，直接都追加到一列里去
+                            string appending = "";
+
+                            foreach (PropertyInfo property in pros)
+                            {
+                                if (property.GetValue(pro.GetValue(item)) == null)
+                                {
+                                    appending += "空置属性|";
+                                }
+                                else
+                                {
+                                    appending += (Convert.ToString(property.GetValue(pro.GetValue(item))) + '|');
+                                }
+                                
+                            }
+                            row.CreateCell(i).SetCellValue(appending);
+
                         }
                         continue;//同样在打印引用类型的属性完成后，需要跳一下循环，防止再打印一遍全限定名
                     }

@@ -13,9 +13,10 @@ namespace MToExcel.poco
 
         public string name { get; set; }
 
+        [IgnoreType]
         public float tall { get; set; }
 
-        [ReferenceType(true)]
+        [ReferenceType(false)]
         public Animal pet { get; set; }
     }
 

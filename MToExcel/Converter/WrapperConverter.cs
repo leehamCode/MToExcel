@@ -17,7 +17,7 @@ namespace MToExcel.Converter
     {
         //类型池,用来保存打了Attribute的标签的自定义类型
         public static Dictionary<Type, ReferenceType> TypePool = new Dictionary<Type, ReferenceType>();
-
+        public static Dictionary<Type,IgnoreType> IgnoreTypePool = new Dictionary<Type, IgnoreType>();
         /// <summary>
         /// taget对象,用来具体的打表
         /// </summary>
@@ -49,14 +49,22 @@ namespace MToExcel.Converter
             {
                 //遍历获取属性中的Attribute对象
                 ReferenceType refer = (ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType));
+                IgnoreType ignore = (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType));
                 if (refer != null)
                 {
                     //将打了标记的类型和标记本身放到类型池中
                     TypePool.Add(pro.PropertyType, refer);
                 }
-            }
+                if(ignore != null)
+                {
+                    IgnoreTypePool.Add(pro.PropertyType, ignore);
+                }
 
+
+            }
         }
+
+        
     }
 }
 
