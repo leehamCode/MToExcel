@@ -52,7 +52,7 @@ namespace MToExcel.Converter
                 if (refer != null)
                 {
                     //将打了标记的类型和标记本身放到类型池中
-                    TypePool.Add(pro.DeclaringType, refer);
+                    TypePool.Add(pro.PropertyType, refer);
                 }
             }
 

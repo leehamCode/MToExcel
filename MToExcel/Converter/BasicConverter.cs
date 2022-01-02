@@ -63,41 +63,45 @@ namespace MToExcel.Converter
 
             IRow header = defaultSheet.CreateRow(0);
 
-            for (int i = 0; i < properties.Length; i++)
+            int i = 0;
+            foreach(PropertyInfo pro in properties)
             {
-
-
                 //设置一下表头样式,将表头设置为加粗字体
                 ICellStyle style = workbook.CreateCellStyle();
                 var Font = workbook.CreateFont();
                 Font.IsBold = true;
                 style.SetFont(Font);
 
-                if (WrapperConverter.TypePool.ContainsKey(properties[i].DeclaringType))  //判断泛型的该属性是否在标记类型池中
+                if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在标记类型池中
                 {
-                    ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(properties[i].DeclaringType);
+                    ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
+
+                    Type typeTemp = pro.PropertyType;
+                   
 
                     if (refer.getIsMultiPart()) //判断是否要将引用类型拆成多列
                     {
-                        PropertyInfo[] pros = properties[i].GetType().GetProperties();
-                        //DeclaringType.GetProperties(); //再将属性类型的属性全部取出
+                        PropertyInfo[] pros = pro.PropertyType.GetProperties();
+                        
+                        //PropertyInfo.PropertyType 可以属性的Type信息
+                        //PropertyInfo.DeclaredType 可以取出定义这个属性的类型信息
+                        //再将属性类型的属性全部取出
 
-                        int k = 0;
-                        for (int j = i; j < properties.Length + pros.Length; j++)
+                        
+                        foreach(PropertyInfo pi in pros)
                         {
-                            header.CreateCell(j).SetCellValue(Convert.ToString(pros[k].Name));
-                            k++;
+                            header.CreateCell(i).SetCellValue(Convert.ToString(pi.DeclaringType.Name+":"+pi.Name));
+                            header.GetCell(i).CellStyle = style;
+                            i++;
                         }
-                        //再打印完引用类的属性后,将表头游标移后引用类型属性个数个单位
-                        i += pros.Length;
-
+                        //如果打印了引用类型的属性，需要Continue跳一下循环，避免再次打印该类型（Type）的信息
+                        continue;
                     }
                 }
 
-
-                header.CreateCell(i).SetCellValue(properties[i].Name);
+                header.CreateCell(i).SetCellValue(pro.Name);
                 header.GetCell(i).CellStyle = style;
-
+                i++;
             }
 
             int RowNumber = 1;            //控制行号增加的变量
@@ -111,31 +115,29 @@ namespace MToExcel.Converter
                 foreach (PropertyInfo pro in properties)
                 {
 
-                    if (WrapperConverter.TypePool.ContainsKey(pro.DeclaringType))  //判断泛型的该属性是否在标记类型池中
+                    if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在标记类型池中
                     {
-                        ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.DeclaringType);
+                        ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
 
                         if (refer.getIsMultiPart())
                         {
-                            PropertyInfo[] pros = pro.GetType().GetProperties();
-                            //DeclaringType.GetProperties(); //再将属性类型的属性全部取出
-
-                            int k = 0;
-                            for (int j = Array.IndexOf(properties, pro); j < properties.Length + pros.Length; j++)
+                            PropertyInfo[] pros = pro.PropertyType.GetProperties();
+                            
+                            foreach(PropertyInfo property in pros)
                             {
-                                if (pros[j].GetValue(pro) == null)
+                                if (property.GetValue(pro.GetValue(item)) == null)
                                 {
-                                    row.CreateCell(j).SetCellValue("空值属性");
+                                    row.CreateCell(ColumnNumber).SetCellValue("空值属性");
                                 }
                                 else
                                 {
-                                    row.CreateCell(j).SetCellValue(Convert.ToString(Convert.ToString(pros[k].GetValue(pro))));
+                                    row.CreateCell(ColumnNumber).SetCellValue(Convert.ToString(property.GetValue(pro.GetValue(item))));
                                 }
-                                k++;
+                                ColumnNumber++;
                             }
-                            //再打印完引用类的属性后,将表头游标移后引用类型属性个数个单位
-
+                            
                         }
+                        continue;//同样在打印引用类型的属性完成后，需要跳一下循环，防止再打印一遍全限定名
                     }
 
 
