@@ -73,14 +73,35 @@ namespace MToExcel.Converter
             foreach(PropertyInfo pro in properties)
             {
                 
-
-                if (WrapperConverter.IgnoreTypePool.ContainsKey(pro.PropertyType))
+                
+                if (WrapperConverter.IgnoreTypePool.Contains(
+                    new KeyValuePair<Type, IgnoreType>(pro.PropertyType,
+                    (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType))==null?  new IgnoreType(false): (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType))
+                    ))) 
                 {
                     //如果在忽略类型中就直接Continue，开始下一轮循环
                     continue;
                 }
 
-                if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在(引用)标记类型池中
+                if(WrapperConverter.CustomNamePool.Contains(
+                    new KeyValuePair<Type, HeaderName>(pro.PropertyType,
+                        (HeaderName)pro.GetCustomAttribute(typeof(HeaderName))==null? new HeaderName(""):(HeaderName)pro.GetCustomAttribute(typeof(HeaderName)) 
+                    )))
+                {
+                    HeaderName name = (HeaderName)pro.GetCustomAttribute(typeof(HeaderName));
+
+                    header.CreateCell(i).SetCellValue(name.getCustomProName());
+                    header.GetCell(i).CellStyle = style;
+                    i++;
+                    continue;
+                }
+
+                //判断泛型的该属性是否在(引用)标记类型池中
+                if (WrapperConverter.TypePool.Contains(
+                    new KeyValuePair<Type, ReferenceType>(
+                        pro.PropertyType,
+                        (ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType))==null? new ReferenceType():(ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType))
+                    )))  
                 {
                     ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
 
@@ -126,13 +147,21 @@ namespace MToExcel.Converter
                 {
                     Type temp = pro.PropertyType;
 
-                    if (WrapperConverter.IgnoreTypePool.ContainsKey(pro.PropertyType))
+                    if (WrapperConverter.IgnoreTypePool.Contains(
+                    new KeyValuePair<Type, IgnoreType>(pro.PropertyType,
+                    (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType)) == null ? new IgnoreType(false) : (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType))
+                    )))
                     {
                         //如果在表体上的话，这个循环就不需要了，可以直接退出这一层循环
                         continue;
                     }
 
-                    if (WrapperConverter.TypePool.ContainsKey(pro.PropertyType))  //判断泛型的该属性是否在（引用）标记类型池中
+                    //判断泛型的该属性是否在（引用）标记类型池中
+                    if (WrapperConverter.TypePool.Contains(
+                            new KeyValuePair<Type, ReferenceType>(
+                       pro.PropertyType,
+                       (ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType)) == null ? new ReferenceType() : (ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType))
+                    )))
                     {
                         ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
 

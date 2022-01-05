@@ -26,6 +26,11 @@ namespace MToExcel.Attributes
             this.isMultiColumn = isMultiColumn;
         }
 
+        public ReferenceType()
+        {
+
+        }
+
         public bool getIsMultiPart()
         {
             return this.isMultiColumn;

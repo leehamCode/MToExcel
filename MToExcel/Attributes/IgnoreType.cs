@@ -12,10 +12,23 @@ namespace MToExcel.Attributes
     [AttributeUsage(AttributeTargets.Property, AllowMultiple = false,Inherited =true)]
     public class IgnoreType:Attribute
     {
+        //是否真的要真的隐藏该属性
+        private bool isTrueIgnore = true;
+
 
         public IgnoreType()
         {
 
+        }
+
+        public IgnoreType(bool isTrueIgnore)
+        {
+            this.isTrueIgnore = isTrueIgnore;
+        }
+
+        public bool IsTrueIgnoreIt()
+        {
+            return isTrueIgnore;
         }
     }
 }
