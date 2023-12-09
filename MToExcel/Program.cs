@@ -13,16 +13,16 @@ namespace MToExcel
                 new Person { id = "202101",name = "张三",tall = 1.7f,pet = new Animal { Id = 1,Name = "佩奇",Category="猪",LivingArea="新日暮里" } },
                 new Person { id = "202102",name = "李四",tall = 1.8f,pet = new Animal { Id = 2,Name = "旺财",Category="狗",LivingArea="SomeWhere" } },
             };
-
+            
             WrapperConverter wrapper = new WrapperConverter();
             //wrapper.basic = new BasicConverter();
-
+            
             IWorkbook workbook = wrapper.ConvertToExcel<Person>(list);
 
-            FileStream fileStream = new FileStream("C:/Users/ASUS/Desktop/Demo3.xls", FileMode.Create);
-
+            FileStream fileStream = new FileStream("./Demo3.xls", FileMode.Create);
+            
             workbook.Write(fileStream);
-
+            
             fileStream.Close();
         }
 
