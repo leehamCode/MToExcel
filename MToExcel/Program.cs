@@ -1,6 +1,9 @@
 ﻿using MToExcel.Converter;
 using MToExcel.poco;
+using NPOI.HSSF.Util;
+using NPOI.OpenXmlFormats.Spreadsheet;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
 
 namespace MToExcel
 {
@@ -15,6 +18,7 @@ namespace MToExcel
             };
             
             WrapperConverter wrapper = new WrapperConverter();
+
             //wrapper.basic = new BasicConverter();
             
             IWorkbook workbook = wrapper.ConvertToExcel<Person>(list);
@@ -42,6 +46,9 @@ namespace MToExcel
             wrapper.basic = new BasicConverter();
 
             IWorkbook workbook = wrapper.ConvertToExcel<Animal>(list);
+
+            ICellStyle cs = workbook.CreateCellStyle();
+            
 
             FileStream file = new FileStream("C:/Users/F1338705/Desktop/DEMO.xls", FileMode.Create);
 
