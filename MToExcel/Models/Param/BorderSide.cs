@@ -14,13 +14,34 @@ namespace MToExcel.Models.Param
         /// 各个边需要的样式
         /// </summary>
         /// <value></value>
-        public List<BorderSet>? sides {get;set;}
+        public HashSet<BorderSet>? Sides {get;set;}
 
         /// <summary>
         /// 描述
         /// </summary>
         /// <value></value>
-        public string? desctipt{get;set;}
+        public string? Desctipt{get;set;}
+
+        // override object.Equals
+        public override bool Equals(object obj)
+        {
+            var target =  (BorderSide)obj;
+
+            if(target.Desctipt==Desctipt&&target.Sides.Equals(Sides))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        // override object.GetHashCode
+        public override int GetHashCode()
+        {
+           return HashCode.Combine(Desctipt,Sides);
+        }
         
     }
 }

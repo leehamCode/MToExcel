@@ -20,37 +20,41 @@ namespace MToExcel.Models.Param
         /// 字体大小
         /// </summary>
         /// <value></value>
-        public int Size{get;set;}
+        public double? Size{get;set;}
 
         /// <summary>
         /// 是否加粗
         /// </summary>
         /// <value></value>
-        public bool IsBold{get;set;}
+        public bool IsBold{get;set;} = false;
 
         /// <summary>
         /// 是否斜体
         /// </summary>
         /// <value></value>
-        public bool IsItalic{get;set;}
+        public bool IsItalic{get;set;} = false;
 
         /// <summary>
         /// 是否带下划线
         /// </summary>
         /// <value></value>
-        public bool IsUnderline{get;set;}
+        public bool IsUnderline{get;set;} = false;
 
-        /// <summary>
-        /// 字体颜色
-        /// </summary>
-        /// <value></value>
-        public short FontColor{get;set;}
 
         /// <summary>
         /// 是否带删除线
         /// </summary>
         /// <value></value>
-        public bool IsStrikeout{get;set;}
+        public bool IsStrikeout{get;set;} = false;
+
+        
+        /// <summary>
+        /// 字体颜色
+        /// </summary>
+        /// <value></value>
+        public short? FontColor{get;set;}
+
+        
 
         // override object.Equals
         public override bool Equals(object obj)
