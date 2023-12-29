@@ -54,6 +54,8 @@ namespace MToExcel.Models.Param
         /// <value></value>
         public short? FontColor{get;set;}
 
+         
+
         
 
         // override object.Equals

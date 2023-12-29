@@ -28,6 +28,7 @@ namespace MToExcel.Converter
 
         public IWorkbook ConvertToExcel<T>(List<T> list)
         {
+            WrapperConverter.CellStylePool.Clear();
 
             IWorkbook workbook = null;
 
@@ -74,19 +75,15 @@ namespace MToExcel.Converter
             {
                 
                 
-                if (WrapperConverter.IgnoreTypePool.Contains(
-                    new KeyValuePair<Type, IgnoreType>(pro.PropertyType,
-                    (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType))==null?  new IgnoreType(false): (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType))
-                    ))) 
+                
+                if(pro.GetCustomAttribute(typeof(IgnoreType))!=null)
                 {
                     //如果在忽略类型中就直接Continue，开始下一轮循环
                     continue;
                 }
 
-                if(WrapperConverter.CustomNamePool.Contains(
-                    new KeyValuePair<Type, HeaderName>(pro.PropertyType,
-                        (HeaderName)pro.GetCustomAttribute(typeof(HeaderName))==null? new HeaderName(""):(HeaderName)pro.GetCustomAttribute(typeof(HeaderName)) 
-                    )))
+                
+                if(pro.GetCustomAttribute(typeof(HeaderName))!=null)
                 {
                     HeaderName name = (HeaderName)pro.GetCustomAttribute(typeof(HeaderName));
 
@@ -97,11 +94,7 @@ namespace MToExcel.Converter
                 }
 
                 //判断泛型的该属性是否在(引用)标记类型池中
-                if (WrapperConverter.TypePool.Contains(
-                    new KeyValuePair<Type, ReferenceType>(
-                        pro.PropertyType,
-                        (ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType))==null? new ReferenceType():(ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType))
-                    )))  
+                if(pro.GetCustomAttribute(typeof(ReferenceType))!=null)
                 {
                     ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
 
@@ -137,7 +130,7 @@ namespace MToExcel.Converter
 
 
             //开始处理表体部分
-            
+
             int RowNumber = 1;            //控制行号增加的变量
             list.ForEach(item => {
 
@@ -150,21 +143,17 @@ namespace MToExcel.Converter
                 {
                     Type temp = pro.PropertyType;
 
-                    if (WrapperConverter.IgnoreTypePool.Contains(
-                    new KeyValuePair<Type, IgnoreType>(pro.PropertyType,
-                    (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType)) == null ? new IgnoreType(false) : (IgnoreType)pro.GetCustomAttribute(typeof(IgnoreType))
-                    )))
+                    
+                    if(pro.GetCustomAttribute(typeof(IgnoreType)) != null)
                     {
                         //如果在表体上的话，这个循环就不需要了，可以直接退出这一层循环
                         continue;
                     }
 
+                    
+
                     //判断泛型的该属性是否在（引用）标记类型池中
-                    if (WrapperConverter.TypePool.Contains(
-                            new KeyValuePair<Type, ReferenceType>(
-                       pro.PropertyType,
-                       (ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType)) == null ? new ReferenceType() : (ReferenceType)pro.GetCustomAttribute(typeof(ReferenceType))
-                    )))
+                    if(pro.GetCustomAttribute(typeof(ReferenceType)) != null)
                     {
                         ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
 
@@ -214,6 +203,7 @@ namespace MToExcel.Converter
 
                     if (pro.GetValue(item) == null)   //在这里进行属性判空
                     {
+                        
                         row.CreateCell(ColumnNumber).SetCellValue("空值属性");
                         ColumnNumber++;
                     }
@@ -237,8 +227,16 @@ namespace MToExcel.Converter
                     }
                     else         //打印剩下的屬性類型是基礎數據類型的情況
                     {
+
+                        
+
                         //打印基础类型数据
-                        row.CreateCell(ColumnNumber).SetCellValue(Convert.ToString(pro.GetValue(item)));
+                        var value_cell =  row.CreateCell(ColumnNumber);
+                        value_cell.SetCellValue(Convert.ToString(pro.GetValue(item)));
+
+                        
+                        WrapperConverter.PutOnCellStyle(pro,value_cell);
+                        
 
                         ColumnNumber++;
 

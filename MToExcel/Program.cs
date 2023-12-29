@@ -1,4 +1,6 @@
-﻿using MToExcel.Converter;
+﻿using System.Reflection;
+using MToExcel.Attributes.TestAttrs;
+using MToExcel.Converter;
 using MToExcel.poco;
 using NPOI.HSSF.Util;
 using NPOI.OpenXmlFormats.Spreadsheet;
@@ -10,6 +12,42 @@ namespace MToExcel
     class Program
     {
         static void Main(string[] args)
+        {
+            // List<TestClass> listOne = new List<TestClass>(){
+            //     new TestClass(){ thename = "弗里斯兰", age = 800, address = "荷兰低地", phone = "shitU" },
+            //     new TestClass(){ thename = "布列塔尼", age = 1200, address = "布列塔尼半岛", phone = "franc" },
+            //     new TestClass(){ thename = "伊利里亚", age = 2300, address = "亚得里亚海西岸", phone = "ita" },
+            //     new TestClass(){ thename = "东色雷斯", age = 2500, address = "黑海东岸", phone = "asdqa" }
+            // };
+
+            // WrapperConverter wrapper = new WrapperConverter();
+            // wrapper.basic = new BasicConverter();
+
+            // IWorkbook workbook = wrapper.ConvertToExcel<TestClass>(listOne);
+
+            // ICellStyle cs = workbook.CreateCellStyle();
+            
+
+            // FileStream file = new FileStream("DEMO.xls", FileMode.Create);
+
+            // workbook.Write(file);
+
+            // file.Close();
+
+            TestClass t1 = new TestClass();
+
+            var typ = typeof(TestClass);
+
+            var pro = typ.GetProperty("address");
+
+            var shit = (StructTestAttriubte)pro.GetCustomAttribute(typeof(StructTestAttriubte));
+
+            shit.args.ToList().ForEach(item=>{
+                Console.WriteLine(item);
+            });
+        }
+
+        public void InitTest()
         {
             List<Person> list = new List<Person>()
             {
@@ -29,7 +67,6 @@ namespace MToExcel
             
             fileStream.Close();
         }
-
 
         public void TestOne()
         {

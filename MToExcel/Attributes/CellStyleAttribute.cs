@@ -6,6 +6,10 @@ using System.Threading.Tasks;
 using MToExcel.Models.Enums;
 using MToExcel.Models.Param;
 
+/// <summary>
+/// 2023/12/20
+/// 因为C#不支持在Attribute上通过结构体和对象传递参数,故次类需要被拆分
+/// </summary>
 namespace MToExcel.Attributes
 {
     [AttributeUsage(AttributeTargets.Property,AllowMultiple =false,Inherited = true)]
@@ -15,6 +19,14 @@ namespace MToExcel.Attributes
         /// 水平对齐样式
         /// </summary>
         /// <value></value>
+        public CellStyleAttribute(Horizon horizon, VerticalHorizon verticalHorizon, short backGroundColor, bool wrapText) 
+        {
+            this.horizon = horizon;
+            this.verticalHorizon = verticalHorizon;
+            this.BackGroundColor = backGroundColor;
+            this.WrapText = wrapText;
+   
+        }
         public Horizon horizon{get;set;}
 
         /// <summary>
@@ -33,13 +45,13 @@ namespace MToExcel.Attributes
         /// 字体样式
         /// </summary>
         /// <value></value>
-        public CharSet? charSet{get;set;}
+        public CharSet charSet{get;set;}
 
         /// <summary>
         /// 前景颜色
         /// </summary>
         /// <value></value>
-        public short ForgeColor{get;set;}
+        public short? ForgeColor{get;set;}
 
         /// <summary>
         /// 背景颜色
@@ -51,7 +63,47 @@ namespace MToExcel.Attributes
         /// 是否自动换行
         /// </summary>
         /// <value></value>
-        public bool WrapText{get;set;}
+        public bool WrapText{get;set;} = false;
+
+        public CellStyleAttribute(Horizon horizon, VerticalHorizon verticalHorizon, BorderSide? borderSide, CharSet? charSet, short? forgeColor, short backGroundColor, bool wrapText)
+        {
+            this.horizon = horizon;
+            this.verticalHorizon = verticalHorizon;
+            this.borderSide = borderSide;
+            this.charSet = charSet;
+            ForgeColor = forgeColor;
+            BackGroundColor = backGroundColor;
+            WrapText = wrapText;
+        }
+
+        public CellStyleAttribute(Horizon horizon, VerticalHorizon verticalHorizon,bool wrapText,CharSet charSet)
+        {
+                this.horizon = horizon;
+                this.verticalHorizon = verticalHorizon;
+                this.WrapText = wrapText;
+                this.charSet = charSet;
+        }
+
+        public CellStyleAttribute(Horizon horizon, VerticalHorizon verticalHorizon,bool wrapText,BorderSide borderSide)
+        {
+                this.horizon = horizon;
+                this.verticalHorizon = verticalHorizon;
+                this.WrapText = wrapText;
+                this.borderSide = borderSide;
+        }
+        
+        public CellStyleAttribute(Horizon horizon, VerticalHorizon verticalHorizon,bool wrapText)
+        {
+            this.horizon = horizon;
+            this.verticalHorizon = verticalHorizon;
+            this.WrapText = wrapText;
+        }
+
+        public CellStyleAttribute()
+        {
+            
+        }
+
 
 
         // override object.Equals,为了避免创建过多的CellStyle对象，在这里重写比较
