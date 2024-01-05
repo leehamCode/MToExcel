@@ -3,6 +3,7 @@ using MToExcel.Models.Enums;
 using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
+using NPOI.XSSF.Model;
 using NPOI.XSSF.UserModel;
 using System;
 using System.Collections.Generic;
@@ -112,6 +113,16 @@ namespace MToExcel.Converter
 
             var used_cellstyle = value_cell.Row.Sheet.Workbook.CreateCellStyle();
 
+            var xssfstyle =  (XSSFCellStyle)used_cellstyle;
+
+            var dataformat = new XSSFDataFormat(new StylesTable());
+
+            var d = (XSSFDataFormat)value_cell.Row.Sheet.Workbook.CreateDataFormat();
+            HSSFDataFormat.GetBuiltinFormat("###00.0");  
+
+            
+
+            
             #region  Attribute无法传递对象作为参数,故将其拆分并注释掉这一段
 
             // if(info.GetCustomAttribute(typeof(CellStyleAttribute))!=null)
@@ -257,6 +268,7 @@ namespace MToExcel.Converter
 
             #endregion
 
+            //字体设置标签
             if(info.GetCustomAttribute(typeof(FontSets))!=null)
             {
                 FontSets item =  (FontSets)info.GetCustomAttribute(typeof(FontSets));
@@ -316,9 +328,14 @@ namespace MToExcel.Converter
 
                 used_cellstyle.SetFont(font);
 
+                if(!string.IsNullOrEmpty(item.Dataformat))
+                {
+                    used_cellstyle.DataFormat = HSSFDataFormat.GetBuiltinFormat(item.Dataformat);
+                }
+
             }
 
-
+            //边框设置标签
             if(info.GetCustomAttribute(typeof(BorderStyleAttribute))!=null)
             {
                 var bordersets =  info.GetCustomAttributes(typeof(BorderStyleAttribute)).ToList();
@@ -493,6 +510,43 @@ namespace MToExcel.Converter
 
             }
 
+            //对齐方式表
+            if(info.GetCustomAttribute(typeof(HorizonAttribute))!=null)
+            {
+                var horizon =  (HorizonAttribute)info.GetCustomAttribute(typeof(HorizonAttribute));
+
+                if(horizon.horizon == Horizon.Center)
+                {
+                    used_cellstyle.Alignment = HorizontalAlignment.Center;
+                }
+                else if(horizon.horizon == Horizon.Left)
+                {
+                    used_cellstyle.Alignment = HorizontalAlignment.Left;
+                }
+                else if(horizon.horizon == Horizon.Right)
+                {
+                    used_cellstyle.Alignment = HorizontalAlignment.Right;
+                }
+
+                if(horizon.verticalHorizon==VerticalHorizon.Up)
+                {
+                    used_cellstyle.VerticalAlignment = VerticalAlignment.Top;
+                }
+
+                if(horizon.verticalHorizon==VerticalHorizon.Mid)
+                {
+                    used_cellstyle.VerticalAlignment = VerticalAlignment.Center;
+                }
+
+                if(horizon.verticalHorizon==VerticalHorizon.Down)
+                {
+                    used_cellstyle.VerticalAlignment = VerticalAlignment.Bottom;
+                }
+
+
+            }
+
+            
             return false;
 
         }

@@ -234,7 +234,6 @@ namespace MToExcel.Converter
                         var value_cell =  row.CreateCell(ColumnNumber);
                         value_cell.SetCellValue(Convert.ToString(pro.GetValue(item)));
 
-                        
                         WrapperConverter.PutOnCellStyle(pro,value_cell);
                         
 

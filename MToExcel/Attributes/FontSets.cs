@@ -52,14 +52,11 @@ namespace MToExcel.Attributes
         /// <value></value>
         public byte[] FontColor{get;set;} = null;
 
+        public string Dataformat{get;set;} = null;
 
         #region 这里面是各种重载的构造方法
 
-        public FontSets()
-        {
-
-        }
-
+       
         public FontSets(string name, double size, bool isBold, bool isItalic, bool isUnderline, bool isStrikeout, byte[] fontColor)
         {
             Name = name;
@@ -70,6 +67,19 @@ namespace MToExcel.Attributes
             IsStrikeout = isStrikeout;
             FontColor = fontColor;
         }
+
+        public FontSets(string name, double size, bool isBold, bool isItalic, bool isUnderline, bool isStrikeout, byte[] fontColor,string dataformat)
+        {
+            Name = name;
+            Size = size;
+            IsBold = isBold;
+            IsItalic = isItalic;
+            IsUnderline = isUnderline;
+            IsStrikeout = isStrikeout;
+            FontColor = fontColor;
+            this.Dataformat = dataformat;
+        }
+
 
         public FontSets(string name, double size, bool isBold, bool isItalic, bool isUnderline, bool isStrikeout)
         {
@@ -123,33 +133,19 @@ namespace MToExcel.Attributes
             this.IsBold = isBold;
         }
 
-        public override bool Equals(object? obj)
+        public FontSets(double size, bool isBold,string dataformat)
         {
-            return obj is FontSets sets &&
-                   base.Equals(obj) &&
-                   EqualityComparer<object>.Default.Equals(TypeId, sets.TypeId) &&
-                   Name == sets.Name &&
-                   Size == sets.Size &&
-                   IsBold == sets.IsBold &&
-                   IsItalic == sets.IsItalic &&
-                   IsUnderline == sets.IsUnderline &&
-                   IsStrikeout == sets.IsStrikeout &&
-                   FontColor == sets.FontColor;
+             this.Size = size;
+             this.IsBold = isBold;
+             this.Dataformat = dataformat;
         }
 
-        public override int GetHashCode()
+        public FontSets(string name, double size, bool isBold,string dataformat)
         {
-            HashCode hash = new HashCode();
-            hash.Add(base.GetHashCode());
-            hash.Add(TypeId);
-            hash.Add(Name);
-            hash.Add(Size);
-            hash.Add(IsBold);
-            hash.Add(IsItalic);
-            hash.Add(IsUnderline);
-            hash.Add(IsStrikeout);
-            hash.Add(FontColor);
-            return hash.ToHashCode();
+            this.Name = name;
+            this.Size = size;
+            this.IsBold = isBold;
+            this.Dataformat = dataformat;
         }
 
         #endregion
