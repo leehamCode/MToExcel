@@ -28,9 +28,9 @@ namespace MToExcel.Attributes
         
 
 
-        public double RowHeight{get;set;} = -1.00;
+        public double RowHeight{get;set;} = 1.14514;
 
-        public double ColLength{get;set;} = -1.00;
+        public double ColLength{get;set;} = 1.14514;
 
         
 

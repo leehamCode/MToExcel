@@ -1,4 +1,5 @@
 ﻿using MToExcel.Attributes;
+using MToExcel.Exceptons;
 using MToExcel.Models.Enums;
 using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
@@ -97,7 +98,7 @@ namespace MToExcel.Converter
         /// <param name="info"></param>
         /// <param name="value_cell"></param>
         /// <returns></returns>
-        public static bool PutOnCellStyle(PropertyInfo info,ICell value_cell)
+        public static bool PutOnCellStyle(PropertyInfo info,ICell value_cell,bool Version)
         {
             if(info==null||value_cell==null)
             {
@@ -113,15 +114,7 @@ namespace MToExcel.Converter
 
             var used_cellstyle = value_cell.Row.Sheet.Workbook.CreateCellStyle();
 
-            var xssfstyle =  (XSSFCellStyle)used_cellstyle;
-
-            var dataformat = new XSSFDataFormat(new StylesTable());
-
-            var d = (XSSFDataFormat)value_cell.Row.Sheet.Workbook.CreateDataFormat();
-            HSSFDataFormat.GetBuiltinFormat("###00.0");  
-
-            
-
+           
             
             #region  Attribute无法传递对象作为参数,故将其拆分并注释掉这一段
 
@@ -267,6 +260,43 @@ namespace MToExcel.Converter
             // }
 
             #endregion
+
+            if(info.GetCustomAttribute(typeof(BackForeColorAttribute))!=null)
+            {
+                var colors =  (BackForeColorAttribute)info.GetCustomAttribute(typeof(BackForeColorAttribute));
+
+                if(colors.back_rgb!=null)
+                {
+                    
+                    if(Version)
+                    {
+                        used_cellstyle.FillPattern = FillPattern.SolidForeground;
+                        ((XSSFCellStyle)used_cellstyle).FillForegroundXSSFColor = new XSSFColor(colors.back_rgb);
+                    }
+                    else
+                    {
+                        used_cellstyle.FillPattern = FillPattern.SolidForeground;
+                        HSSFColor c1 = HSSFColor.ToHSSFColor(new XSSFColor(colors.back_rgb));
+                        ((HSSFCellStyle)used_cellstyle).FillForegroundColor = c1.Indexed ;
+                    }
+                }
+
+                if(colors.fore_rgb!=null)
+                {
+                    
+                    if(Version)
+                    {
+                        used_cellstyle.FillPattern = FillPattern.SolidForeground;
+                        ((XSSFCellStyle)used_cellstyle).FillBackgroundXSSFColor = new XSSFColor(colors.fore_rgb);
+                    }
+                    else
+                    {
+                        HSSFColor c1 = HSSFColor.ToHSSFColor(new XSSFColor(colors.back_rgb));
+                        used_cellstyle.FillPattern = FillPattern.SolidForeground;
+                        ((HSSFCellStyle)used_cellstyle).FillBackgroundColor = c1.Indexed ;
+                    }
+                }
+            }
 
             //字体设置标签
             if(info.GetCustomAttribute(typeof(FontSets))!=null)
@@ -546,7 +576,33 @@ namespace MToExcel.Converter
 
             }
 
+            //单元格长宽
+            if(info.GetCustomAttribute(typeof(DynaRowColumnLenAttribute))!=null)
+            {
+                var lens =  (DynaRowColumnLenAttribute)info.GetCustomAttribute(typeof(DynaRowColumnLenAttribute));
+                if(lens.ColLength<=0||lens.RowHeight<=0)
+                {
+                    throw new RowColumnLenException("无法给列长或行高设置负数！");
+                }
+
+                if(lens.ColLength!=1.14514)
+                {
+                    var col_index =  value_cell.ColumnIndex;
+
+                    value_cell.Sheet.SetColumnWidth(col_index,Convert.ToInt32(lens.ColLength));
+                }
+
+                if(lens.RowHeight!=1.14514)
+                {
+                    value_cell.Row.HeightInPoints =  (float)lens.RowHeight;
+                }
+            }
             
+            
+            
+
+            value_cell.CellStyle = used_cellstyle;
+
             return false;
 
         }

@@ -33,9 +33,9 @@ namespace MToExcel.Converter
             IWorkbook workbook = null;
 
             if (Version)
-                workbook = new HSSFWorkbook();
-            else
                 workbook = new XSSFWorkbook();
+            else
+                workbook = new HSSFWorkbook();
 
             ISheet defaultSheet = workbook.CreateSheet("SheetOne");
 
@@ -234,7 +234,7 @@ namespace MToExcel.Converter
                         var value_cell =  row.CreateCell(ColumnNumber);
                         value_cell.SetCellValue(Convert.ToString(pro.GetValue(item)));
 
-                        WrapperConverter.PutOnCellStyle(pro,value_cell);
+                        WrapperConverter.PutOnCellStyle(pro,value_cell,Version);
                         
 
                         ColumnNumber++;

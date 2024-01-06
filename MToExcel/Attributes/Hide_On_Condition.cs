@@ -11,13 +11,16 @@ namespace MToExcel.Attributes
     [AttributeUsage(AttributeTargets.Class,Inherited =false,AllowMultiple =false)]
     public class Hide_On_Condition:Attribute
     {
-        public Hide_On_Condition(string condition)
+        public Hide_On_Condition(string rowCondition, string colCondition)
         {
-            this.condition = condition;
+            this.rowCondition = rowCondition;
+            this.colCondition = colCondition;
         }
 
-        public string condition{get;set;} = "non";
+        public string rowCondition {get;set;} = "non";
 
+       public string colCondition {get;set;} = "non";
+       
         
     }
 }
