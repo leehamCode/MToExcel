@@ -1,4 +1,5 @@
 ﻿using MToExcel.Attributes;
+using MToExcel.Exceptons;
 using NPOI.HSSF.UserModel;
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
@@ -20,6 +21,41 @@ namespace MToExcel.Converter
         /// false = 07版
         /// </summary>
         public bool Version { get; set; }
+
+        /// <summary>
+        /// 自定义表头函数
+        /// </summary>
+        /// <value>转化中需要导出的Workbook</value>
+        /// <value>自定义表头需要占用的行数，如果没有，则默认一行</value>
+        public Action<IWorkbook> CustomHeadMethod{get;set;} = null;
+
+        /// <summary>
+        /// 自定义表头需要占用的行数
+        /// </summary>
+        public int? CustomHeadRows {get;set;} = null;   //使用自定义表头必须设置
+
+
+        /// <summary>
+        /// 自定义Excel尾部函数
+        /// </summary>
+        /// <value>Excel本体</value>
+        /// <value>单个Sheet的最后一行</value>
+        public Action<IWorkbook,int> CustomTailMethod{get;set;} = null;
+
+        /// <summary>
+        /// 行打印前事件
+        /// </summary>
+        /// <value></value>
+        public Action<IRow,Object> item_change_before_event { get; set; }
+
+
+        /// <summary>
+        /// 打印后事件
+        /// </summary>
+        /// <value></value>
+        public Action<IRow,Object> item_change_after_event{get;set;}
+
+
 
         public BasicConverter()
         {
@@ -60,6 +96,22 @@ namespace MToExcel.Converter
 
             PropertyInfo[] properties = type.GetProperties();
 
+            //-------------------------------------------------------------------------------------------------------------------分割线
+
+            if(CustomHeadMethod!=null&&CustomHeadRows!=null)
+            {
+                if(CustomHeadRows<=0)
+                {
+                    throw new CustomHeadException("自定义表头长度必须大于0!");
+                }
+                CustomHeadMethod.Invoke(workbook);
+            }
+            else
+            {
+                throw new CustomHeadException("自定义表头必须设置自定义表头长度，不然无法确定表头开始的行数！");
+                
+            }
+            
             //先用属性名打印一行表头
 
             IRow header = defaultSheet.CreateRow(0);
@@ -71,72 +123,88 @@ namespace MToExcel.Converter
             style.SetFont(Font);
 
             int i = 0;
-            foreach(PropertyInfo pro in properties)
+
+            if(CustomHeadMethod!=null)
             {
-                
-                
-                
-                if(pro.GetCustomAttribute(typeof(IgnoreType))!=null)
+                foreach(PropertyInfo pro in properties)
                 {
-                    //如果在忽略类型中就直接Continue，开始下一轮循环
-                    continue;
-                }
+                    
+                    
+                    
+                    if(pro.GetCustomAttribute(typeof(IgnoreType))!=null)
+                    {
+                        //如果在忽略类型中就直接Continue，开始下一轮循环
+                        continue;
+                    }
 
-                
-                if(pro.GetCustomAttribute(typeof(HeaderName))!=null)
-                {
-                    HeaderName name = (HeaderName)pro.GetCustomAttribute(typeof(HeaderName));
+                    
+                    if(pro.GetCustomAttribute(typeof(HeaderName))!=null)
+                    {
+                        HeaderName name = (HeaderName)pro.GetCustomAttribute(typeof(HeaderName));
 
-                    header.CreateCell(i).SetCellValue(name.getCustomProName());
+                        header.CreateCell(i).SetCellValue(name.getCustomProName());
+                        header.GetCell(i).CellStyle = style;
+                        i++;
+                        continue;
+                    }
+
+                    //判断泛型的该属性是否在(引用)标记类型池中
+                    if(pro.GetCustomAttribute(typeof(ReferenceType))!=null)
+                    {
+                        ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
+
+                        if (refer.getIsMultiPart()) //判断是否要将引用类型拆成多列 :多列
+                        {
+                            PropertyInfo[] pros = pro.PropertyType.GetProperties();
+                            
+                            //PropertyInfo.PropertyType 可以属性的Type信息
+                            //PropertyInfo.DeclaredType 可以取出定义这个属性的类型信息
+                            //再将属性类型的属性全部取出
+
+                            
+                            foreach(PropertyInfo pi in pros)
+                            {
+                                header.CreateCell(i).SetCellValue(Convert.ToString(pi.DeclaringType.Name+":"+pi.Name));
+                                header.GetCell(i).CellStyle = style;
+                                i++;
+                            }
+                            //如果打印了引用类型的属性，需要Continue跳一下循环，避免再次打印该类型（Type）的信息
+                            continue;
+                        }
+                        else  //~：单列,打印单列表头的话，不需要额外增加列数，所以直接退出循环即可
+                        {
+                            header.CreateCell(i).SetCellValue(Convert.ToString(pro.Name));
+                            continue;
+                        }
+                    }
+
+                    header.CreateCell(i).SetCellValue(pro.Name);
                     header.GetCell(i).CellStyle = style;
                     i++;
-                    continue;
                 }
-
-                //判断泛型的该属性是否在(引用)标记类型池中
-                if(pro.GetCustomAttribute(typeof(ReferenceType))!=null)
-                {
-                    ReferenceType refer = WrapperConverter.TypePool.GetValueOrDefault(pro.PropertyType);
-
-                    if (refer.getIsMultiPart()) //判断是否要将引用类型拆成多列 :多列
-                    {
-                        PropertyInfo[] pros = pro.PropertyType.GetProperties();
-                        
-                        //PropertyInfo.PropertyType 可以属性的Type信息
-                        //PropertyInfo.DeclaredType 可以取出定义这个属性的类型信息
-                        //再将属性类型的属性全部取出
-
-                        
-                        foreach(PropertyInfo pi in pros)
-                        {
-                            header.CreateCell(i).SetCellValue(Convert.ToString(pi.DeclaringType.Name+":"+pi.Name));
-                            header.GetCell(i).CellStyle = style;
-                            i++;
-                        }
-                        //如果打印了引用类型的属性，需要Continue跳一下循环，避免再次打印该类型（Type）的信息
-                        continue;
-                    }
-                    else  //~：单列,打印单列表头的话，不需要额外增加列数，所以直接退出循环即可
-                    {
-                        header.CreateCell(i).SetCellValue(Convert.ToString(pro.Name));
-                        continue;
-                    }
-                }
-
-                header.CreateCell(i).SetCellValue(pro.Name);
-                header.GetCell(i).CellStyle = style;
-                i++;
             }
+
+            
 
 
             //开始处理表体部分
 
             int RowNumber = 1;            //控制行号增加的变量
+            if(CustomHeadMethod!=null)    //如果有自定表头，则从自定义表头占用行的下一行开始表体
+            {
+                RowNumber = CustomHeadRows.Value;
+            }
             list.ForEach(item => {
 
                 IRow row = defaultSheet.CreateRow(RowNumber); //创建一行写一行的数据
 
                 PropertyInfo[] properties = item.GetType().GetProperties();
+
+                //处理行打印前数据
+                if(item_change_before_event!=null)
+                {
+                    item_change_before_event.Invoke(row,item);
+                }
 
                 int ColumnNumber = 0;     //控制列增加的变量
                 foreach (PropertyInfo pro in properties)
@@ -244,7 +312,17 @@ namespace MToExcel.Converter
                 }
                 RowNumber++;
 
+                //处理行打印后事件
+
+
+
             });
+
+            if(CustomTailMethod!=null)
+            {
+                //给出最后一行开始的RowNumber
+                CustomTailMethod.Invoke(workbook,RowNumber);
+            }
 
             return workbook;
         }

@@ -12,21 +12,37 @@ namespace MToExcel.Attributes
     public class DynaRowColumnLenAttribute:Attribute
     {
 
-        public DynaRowColumnLenAttribute(double? rowHeight, double? colLength)
+        public DynaRowColumnLenAttribute(double rowHeight, double colLength)
         {
-            if(rowHeight!=null)
+            if(rowHeight!=0)
             {
-                RowHeight = rowHeight.Value;
+                RowHeight = rowHeight;
             }
 
-            if(colLength!=null)
+            if(colLength!=0)
             {
-                ColLength = colLength.Value;
+                ColLength = colLength;
             }
         }
 
-        
+        /// <summary>
+        /// 单个设置单元格的长宽
+        /// </summary>
+        /// <param name="RowOrCol_Len"></param>
+        /// <param name="length">长度单位</param>
+        public DynaRowColumnLenAttribute(bool RowOrCol_Len,double length)
+        {
+            if(RowOrCol_Len)
+            {
+                RowHeight = length;
+            }
+            else
+            {
+                ColLength = length;
+            }
+        }
 
+       
 
         public double RowHeight{get;set;} = 1.14514;
 

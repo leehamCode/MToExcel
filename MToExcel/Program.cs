@@ -21,7 +21,11 @@ namespace MToExcel
             };
 
             WrapperConverter wrapper = new WrapperConverter();
+            
             wrapper.basic = new BasicConverter();
+            wrapper.basic.CustomHeadMethod = (workbook)=>{
+                Console.WriteLine("测试自定义表头-----！！！");
+            };
 
             IWorkbook workbook = wrapper.ConvertToExcel<TestClass>(listOne);
 

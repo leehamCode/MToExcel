@@ -29,6 +29,7 @@ namespace MToExcel.poco
         [HeaderName("电话")]
         [Horizon(Models.Enums.Horizon.Center,Models.Enums.VerticalHorizon.Up)]
         [BackForeColor(true,new byte[3]{ 50,187,176})]
+        [DynaRowColumnLen(123.45,123.45)]
         //[CellStyle(Models.Enums.Horizon.Center, Models.Enums.VerticalHorizon.Up, false, charSet = new CharSet() { Size = 13.1d })]
         public string phone{get;set;}
     }
