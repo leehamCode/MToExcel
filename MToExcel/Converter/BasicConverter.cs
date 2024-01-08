@@ -327,6 +327,12 @@ namespace MToExcel.Converter
             return workbook;
         }
 
+
+        public IWorkbook ConvertToExcel_Double<T>(List<List<T>> list)
+        {
+            throw new NotImplementedException();
+        }
+
         //判断一个类型是否为基础数据类型
         /// <summary>
         /// 是为true,否为false
@@ -376,7 +382,7 @@ namespace MToExcel.Converter
             return false;
         }
 
-
+        
     }
 
 }

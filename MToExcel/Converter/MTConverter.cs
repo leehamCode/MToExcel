@@ -18,6 +18,15 @@ namespace MToExcel.Converter
         /// <returns></returns>
         public IWorkbook ConvertToExcel<T>(List<T> list);
 
+
+        /// <summary>
+        /// 如果需要做阶段性的总结行应该使用此方法
+        /// </summary>
+        /// <param name="list"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public IWorkbook ConvertToExcel_Double<T>(List<List<T>> list);
+
         
     }
 

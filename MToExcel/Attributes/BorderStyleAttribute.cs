@@ -6,7 +6,7 @@ using MToExcel.Models.Enums;
 
 namespace MToExcel.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property,Inherited =true,AllowMultiple =true)]
+    [AttributeUsage(AttributeTargets.Property|AttributeTargets.Class,Inherited =true,AllowMultiple =true)]
     public class BorderStyleAttribute:Attribute
     {
 
