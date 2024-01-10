@@ -18,13 +18,13 @@ namespace MToExcel.Attributes
         /// 需要合并多少个列
         /// </summary>
         /// <value></value>
-        ///public int Col_Merge_num {get;set;} 
+        public int Col_Merge_num {get;set;} = 1;
 
         /// <summary>
         /// 需要合并多少行
         /// </summary>
         /// <value></value>
-        ///public int Row_Merge_num {get;set;}
+        public int Row_Merge_num {get;set;} = 1;
 
         /// <summary>
         /// 单行高度
@@ -38,6 +38,10 @@ namespace MToExcel.Attributes
         public int Font_Size{get;set;}
 
         public byte[] Font_color{get;set;}
+
+        public bool IsBold{get;set;} = false;
+
+        public bool IsItalic{get;set;} = false;
 
         public byte[] Back_color{get;set;}
 

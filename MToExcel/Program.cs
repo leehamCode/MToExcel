@@ -13,30 +13,32 @@ namespace MToExcel
     {
         static void Main(string[] args)
         {
-            List<TestClass> listOne = new List<TestClass>(){
-                new TestClass(){ thename = "弗里斯兰", age = 800, address = "荷兰低地", phone = "shitU" },
-                new TestClass(){ thename = "布列塔尼", age = 1200, address = "布列塔尼", phone = "franc" },
-                new TestClass(){ thename = "伊利里亚", age = 2300, address = "亚得里亚", phone = "ita" },
-                new TestClass(){ thename = "东色雷斯", age = 2500, address = "黑海", phone = "asdqa" }
+            Console.WriteLine("Hello World!");
+
+            WrapperConverter wrap = new WrapperConverter();
+            wrap.basic = new BasicConverter();
+
+            List<TestClass2> ts = new List<TestClass2> {
+            
+                new TestClass2(){ Name = "南昌", Address = "长江中下游平原", Birth = "678-12-12", Phone = "123456789", Email = "1537004059@qq.com" },
+                new TestClass2(){ Name = "九江", Address = "长江中下游平原", Birth = "678-01-01", Phone = "657712345", Email = "6666677778@qq.com" },
+                new TestClass2(){ Name = "宜春", Address = "东南丘陵", Birth = "1056-07-12", Phone = "778812345", Email = "yiyandingzhen@qq.com" },
+                new TestClass2(){ Name = "上饶", Address = "罗霄山北面", Birth = "1234-12-12", Phone = "666875652", Email = "5712351231@qq.com" },
+                new TestClass2(){ Name = "赣州", Address = "南岭", Birth = "956-12-12", Phone = "98237818923", Email = "6154231@qq.com" },
+                new TestClass2(){ Name = "萍乡", Address = "靠近湖南", Birth = "8293-12-12", Phone = "231231", Email = "leehan51240@qq.com" },
             };
 
-            WrapperConverter wrapper = new WrapperConverter();
-            
-            wrapper.basic = new BasicConverter();
-            wrapper.basic.CustomHeadMethod = (workbook)=>{
-                Console.WriteLine("测试自定义表头-----！！！");
-            };
+            IWorkbook workbook = wrap.ConvertToExcel<TestClass2>(ts);
 
-            IWorkbook workbook = wrapper.ConvertToExcel<TestClass>(listOne);
+            MemoryStream ms = new MemoryStream();
 
-            ICellStyle cs = workbook.CreateCellStyle();
-            
+            workbook.Write(ms);
 
-            FileStream file = new FileStream("DEMO.xlsx", FileMode.Create);
+            FileStream fs = new FileStream("wdnmd.xlsx", FileMode.OpenOrCreate, FileAccess.ReadWrite);
 
-            workbook.Write(file);
+            fs.Write(ms.ToArray());
 
-            file.Close();
+            fs.Close();
 
             
         }
@@ -101,6 +103,36 @@ namespace MToExcel
 
             stream.Close();
         }
+
+        public void TestThree()
+        {
+            List<TestClass> listOne = new List<TestClass>(){
+                new TestClass(){ thename = "弗里斯兰", age = 800, address = "荷兰低地", phone = "shitU" },
+                new TestClass(){ thename = "布列塔尼", age = 1200, address = "布列塔尼", phone = "franc" },
+                new TestClass(){ thename = "伊利里亚", age = 2300, address = "亚得里亚", phone = "ita" },
+                new TestClass(){ thename = "东色雷斯", age = 2500, address = "黑海", phone = "asdqa" }
+            };
+
+            WrapperConverter wrapper = new WrapperConverter();
+            
+            wrapper.basic = new BasicConverter();
+            //wrapper.basic.CustomHeadMethod = (workbook)=>{
+            //    Console.WriteLine("测试自定义表头-----！！！");
+            //};
+
+            IWorkbook workbook = wrapper.ConvertToExcel<TestClass>(listOne);
+
+            ICellStyle cs = workbook.CreateCellStyle();
+            
+
+            FileStream file = new FileStream("DEMO.xlsx", FileMode.Create);
+
+            workbook.Write(file);
+
+            file.Close();
+        }
+
+
     }
 
 }

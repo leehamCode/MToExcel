@@ -6,7 +6,7 @@
   "compilationOptions": {},
   "targets": {
     ".NETCoreApp,Version=v6.0": {
-      "MToExcel/1.0.0": {
+      "MToExcel/1.0.2": {
         "dependencies": {
           "NPOI": "2.5.5"
         },
@@ -155,7 +155,7 @@
     }
   },
   "libraries": {
-    "MToExcel/1.0.0": {
+    "MToExcel/1.0.2": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

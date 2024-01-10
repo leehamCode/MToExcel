@@ -9,7 +9,7 @@ namespace MToExcel.Attributes
     /// <summary>
     /// 设置对齐标签
     /// </summary>
-    [AttributeUsage(AttributeTargets.Property,Inherited =false,AllowMultiple =false)]
+    [AttributeUsage(AttributeTargets.Property|AttributeTargets.Class,Inherited =false,AllowMultiple =false)]
     public class HorizonAttribute:Attribute
     {
         public HorizonAttribute(Horizon horizon, VerticalHorizon verticalHorizon)
