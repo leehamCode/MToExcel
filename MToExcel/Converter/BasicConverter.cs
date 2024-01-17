@@ -518,11 +518,14 @@ namespace MToExcel.Converter
 
                         titlecell.Row.Sheet.AddMergedRegion(titleBox);
 
+                        
+
                         //此处检查其他Attriubte
                         //Do Something--------------------------------------------------
 
                         #region 
 
+                        //是否对齐
                         if(type.GetCustomAttribute(typeof(HorizonAttribute))!=null)
                         {
                             var horzion =  (HorizonAttribute)type.GetCustomAttribute(typeof(HorizonAttribute));
@@ -554,7 +557,9 @@ namespace MToExcel.Converter
                             }
 
                         }
-
+                        
+                        /*
+                            合并单元格后就不能用一般的边框设置了
                         if(type.GetCustomAttribute(typeof(BorderStyleAttribute))!=null)
                         {
                             var borders = (IEnumerable<BorderStyleAttribute>)type.GetCustomAttributes(typeof(BorderStyleAttribute));
@@ -720,9 +725,281 @@ namespace MToExcel.Converter
 
                             });
                         }
+                        
+                        
+                        */
+                        
 
 
                         #endregion
+
+                        
+                        var bordersets =  (IEnumerable<BorderStyleAttribute>)type.GetCustomAttributes(typeof(BorderStyleAttribute));
+
+                        //设置合并单元格边框
+                        bordersets.DistinctBy(it=>it.Direct).ToList().ForEach(item=>{
+
+                            if(item.Direct==BorderDirect.Upper)
+                            {
+                               switch (item.Wid)
+                               {
+                                
+                                case BorderWid.MiddBorder:{
+                                    RegionUtil.SetBorderTop((int)BorderStyle.Medium,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetTopBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThickBorder:{
+                                    RegionUtil.SetBorderTop((int)BorderStyle.Thick,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetTopBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThinBorder:{
+                                    RegionUtil.SetBorderTop((int)BorderStyle.Thin,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetTopBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.NoneBorder:{
+                                    RegionUtil.SetBorderTop((int)BorderStyle.None,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetTopBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                default:
+                                    break;
+                               }
+                            }
+                            else if(item.Direct==BorderDirect.Bottom)
+                            {
+                               switch (item.Wid)
+                               {
+                                
+                                case BorderWid.MiddBorder:{
+                                    RegionUtil.SetBorderBottom((int)BorderStyle.Medium,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBottomBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThickBorder:{
+                                    RegionUtil.SetBorderBottom((int)BorderStyle.Thick,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBottomBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThinBorder:{
+                                    RegionUtil.SetBorderBottom((int)BorderStyle.Thin,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBottomBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.NoneBorder:{
+                                    RegionUtil.SetBorderBottom((int)BorderStyle.None,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBottomBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                default:
+                                    break;
+                               }
+                            }
+                            else if(item.Direct==BorderDirect.Left)
+                            {
+                                switch (item.Wid)
+                               {
+                                
+                                case BorderWid.MiddBorder:{
+                                    RegionUtil.SetBorderLeft((int)BorderStyle.Medium,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetLeftBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThickBorder:{
+                                    RegionUtil.SetBorderLeft((int)BorderStyle.Thick,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetLeftBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThinBorder:{
+                                    RegionUtil.SetBorderLeft((int)BorderStyle.Thin,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetLeftBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.NoneBorder:{
+                                    RegionUtil.SetBorderLeft((int)BorderStyle.None,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetLeftBorderColor(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                default:
+                                    break;
+                               }
+                            }
+                            else if(item.Direct==BorderDirect.Diagonal_back_slash)
+                            {
+                                switch (item.Wid)
+                               {
+                                
+                                case BorderWid.MiddBorder:{
+                                
+                                    //RegionUtil.SetBorderBottom((int)BorderStyle.Medium,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Backward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.Medium;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+
+                                    break;
+                                }
+                                case BorderWid.ThickBorder:{
+
+                                    //RegionUtil.SetBorderLeft((int)BorderStyle.Thick,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Backward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.Medium;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+
+                                    break;
+                                }
+                                case BorderWid.ThinBorder:{
+                                    //RegionUtil.SetBorderLeft((int)BorderStyle.Thin,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Backward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.Thin;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+                                    break;
+                                }
+                                case BorderWid.NoneBorder:{
+                                    //RegionUtil.SetBorderLeft((int)BorderStyle.None,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Backward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.None;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+                                    break;
+                                }
+                                default:
+                                    break;
+                               }
+                            }
+                            else if(item.Direct==BorderDirect.Diagonal_slash)
+                            {
+                                 switch (item.Wid)
+                               {
+                                
+                                case BorderWid.MiddBorder:{
+                                    //RegionUtil.SetBorderRight((int)BorderStyle.Medium,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Forward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.Medium;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThickBorder:{
+                                    //RegionUtil.SetBorderRight((int)BorderStyle.Thick,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Forward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.Thick;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThinBorder:{
+                                    //RegionUtil.SetBorderRight((int)BorderStyle.Thin,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Forward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.Thin;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+                                    break;
+                                }
+                                case BorderWid.NoneBorder:{
+                                    //RegionUtil.SetBorderRight((int)BorderStyle.None,titleBox,titlecell.Row.Sheet);
+                                    t_style.BorderDiagonal = BorderDiagonal.Forward;
+                                    t_style.BorderDiagonalLineStyle = BorderStyle.None;
+                                    if(item.Color!=null){
+                                        t_style.BorderDiagonalColor = (new XSSFColor(item.Color)).Index;
+                                    }
+                                    break;
+                                }
+                                default:
+                                    break;
+                               }
+                            }
+                            else
+                            {
+                               switch (item.Wid)
+                               {
+                                
+                                case BorderWid.MiddBorder:{
+                                    RegionUtil.SetBorderRight((int)BorderStyle.Medium,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBorderRight(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThickBorder:{
+                                    RegionUtil.SetBorderRight((int)BorderStyle.Thick,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBorderRight(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.ThinBorder:{
+                                    RegionUtil.SetBorderRight((int)BorderStyle.Thin,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBorderRight(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                case BorderWid.NoneBorder:{
+                                    RegionUtil.SetBorderRight((int)BorderStyle.None,titleBox,titlecell.Row.Sheet);
+                                    if(item.Color!=null){
+                                        var color =  new XSSFColor(item.Color);
+                                        RegionUtil.SetBorderRight(color.Index,titleBox,titlecell.Row.Sheet);
+                                    }
+                                    break;
+                                }
+                                default:
+                                    break;
+                               }
+                            }
+
+
+                        });
 
 
                         titlecell.CellStyle = t_style;
@@ -947,10 +1224,25 @@ namespace MToExcel.Converter
                 CustomTailMethod.Invoke(workbook,RowNumber);
             }
 
+            //最后如果有冻结标签就设置冻结设置的行列
+
+            if(type.GetCustomAttribute(typeof(FreezeAreaAttribute))!=null)
+            {
+                var freeze = (FreezeAreaAttribute)type.GetCustomAttribute(typeof(FreezeAreaAttribute));
+
+                workbook.GetSheetAt(0).CreateFreezePane(freeze.FreezeStartCol,freeze.FreezeStartRow);
+            }
+
             return workbook;
         }
 
 
+        /// <summary>
+        /// 待完善
+        /// </summary>
+        /// <param name="list"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
         public IWorkbook ConvertToExcel_Double<T>(List<List<T>> list)
         {
             throw new NotImplementedException();
