@@ -1,6 +1,7 @@
 ﻿using MToExcel.Attributes;
 using MToExcel.Exceptons;
 using MToExcel.Models.Enums;
+using MToExcel.Utils;
 using NPOI.HSSF.UserModel;
 using NPOI.HSSF.Util;
 using NPOI.SS.UserModel;
@@ -228,7 +229,8 @@ namespace MToExcel.Converter
 
                         var titlecell =  title.CreateCell(0);
 
-                        titlecell.SetCellValue(title_attr.Context);
+                        //解析字符串中的通配符
+                        titlecell.SetCellValue(ExpressionHelp.Read_Title_Content<T>(title_attr.Context,list,true));
 
                         //此处检查其他标签
                         //-------------------
@@ -512,7 +514,7 @@ namespace MToExcel.Converter
 
                         var titlecell =  title.CreateCell(0);
 
-                        titlecell.SetCellValue(title_attr.Context);
+                        titlecell.SetCellValue(ExpressionHelp.Read_Title_Content<T>(title_attr.Context,list,true));
 
                         CellRangeAddress titleBox = new CellRangeAddress(0,title_attr.Row_Merge_num-1,0,title_attr.Col_Merge_num-1);
 
@@ -1215,6 +1217,17 @@ namespace MToExcel.Converter
 
                 //处理行打印后事件
 
+                //处理是否隐藏一行的条件,现只支持行隐藏,不支持列隐藏
+                if(typeof(T).GetCustomAttribute(typeof(Hide_On_Condition))!=null)
+                {
+                    var hide_attr =  (Hide_On_Condition)typeof(T).GetCustomAttribute(typeof(Hide_On_Condition));
+                    bool ishide = ExpressionHelp.Read_Condition_expression<T>(hide_attr.rowCondition,item);
+
+                    if(ishide)
+                    {
+                        row.Hidden = true;
+                    }
+                }
 
 
             });
