@@ -54,7 +54,7 @@ namespace MToExcel.Utils
 
                 if(Real_EXP.Contains($@"${Index}"))
                 {
-                    Real_EXP.Replace($@"${Index}",item.GetValue(first).ToString());
+                    Real_EXP = Real_EXP.Replace($@"${Index}",item.GetValue(first).ToString());
 
                 }
 
@@ -88,11 +88,11 @@ namespace MToExcel.Utils
             int Index = 1;
             props.ToList().ForEach(item=>{
 
-                if(exp.Contains($@"${Index}"))
+                if(Real_EXP.Contains($@"${Index}"))
                 {
                     var varib =  props[Index-1];
 
-                    Real_EXP.Replace($@"${Index}",varib.Name);
+                    Real_EXP = Real_EXP.Replace($@"${Index}",varib.Name);
                     
                 }    
                 Index++;
@@ -104,8 +104,13 @@ namespace MToExcel.Utils
 
                 var result =  CSharpScript.EvaluateAsync(Real_EXP,option,(T)obj);
 
+                var R =  result.Result;
+
+                //这的返回值具体
+                Console.WriteLine((bool)R);
+
                 //这个表达式很简洁
-                if(result.Result is not null or (object?)true)
+                if((bool)R)
                 {
                     return true;
                 }

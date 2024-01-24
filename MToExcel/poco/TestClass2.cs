@@ -6,7 +6,8 @@ using MToExcel.Attributes;
 
 namespace MToExcel.poco
 {
-    [TitleAttribute(Context ="测试打印标题行",Font_Name ="新細明體",Font_Size =16,Font_color =new byte[]{ 80,235,227 })]
+    [TitleAttribute(Context ="测试打印标题行$1",Font_Name ="新細明體",Font_Size =16,Font_color =new byte[]{ 80,235,227 })]
+    [Hide_On_Condition(rowCondition ="$1==\"九江\"")]
     public class TestClass2
     {
         [HeaderName("你的姓名:")]
