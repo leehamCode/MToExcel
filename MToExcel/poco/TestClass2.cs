@@ -11,6 +11,12 @@ namespace MToExcel.poco
     public class TestClass2
     {
         [HeaderName("你的姓名:")]
+        [MergeNearEqualBox]
+        [BorderStyle(Models.Enums.BorderWid.MiddBorder,new byte[]{44,56,179},Models.Enums.BorderDirect.Left)]
+        [BorderStyle(Models.Enums.BorderWid.MiddBorder,new byte[]{44,56,179},Models.Enums.BorderDirect.Bottom)]
+        [BorderStyle(Models.Enums.BorderWid.MiddBorder,new byte[]{44,56,179},Models.Enums.BorderDirect.Right)]
+        [BorderStyle(Models.Enums.BorderWid.MiddBorder,new byte[]{44,56,179},Models.Enums.BorderDirect.Upper)]
+
         public string Name { get; set; }
 
         [HeaderName("地址:")]

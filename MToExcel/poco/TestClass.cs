@@ -11,6 +11,7 @@ using NPOI.HSSF.Util;
 
 namespace MToExcel.poco
 {
+    [FreezeArea(FreezeStartCol =3,FreezeStartRow = 3)]
     public class TestClass
     {
         public static ddc obj = new ddc("asda");

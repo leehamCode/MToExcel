@@ -623,5 +623,53 @@ namespace MToExcel.Utils
 
 
         }
+
+
+        /// <summary>
+        /// 获取要合并列的位置[行位置]
+        /// 生成By文心一言
+        /// </summary>
+        /// <param name="objlist"></param>
+        /// <returns></returns>
+        public static Dictionary<object,List<List<int>>> GetMergedPosition(object[] objlist){
+
+            Dictionary<object, List<List<int>>> consecutiveOccurrences = new Dictionary<object, List<List<int>>>();  
+  
+            for (int i = 0; i < objlist.Length; i++)  
+            {  
+                var current = objlist[i];  
+    
+                // 检查下一个元素是否与当前元素相同  
+                  // 检查下一个元素是否与当前元素相同  
+                if (i < objlist.Length - 1 && objlist[i + 1] == current)  
+                {  
+                    // 如果下一个元素相同，找到所有连续的位置  
+                    List<int> consecutivePositions = new List<int> { i };  
+                    while (i < objlist.Length - 1 && objlist[i + 1] == current)  
+                    {  
+                        i++;  
+                        consecutivePositions.Add(i);  
+                    }  
+            
+                    // 添加到字典中  
+                    if (consecutiveOccurrences.ContainsKey(current))  
+                    {  
+                        consecutiveOccurrences[current].Add(consecutivePositions);  
+                    }  
+                    else  
+                    {  
+                        consecutiveOccurrences.Add(current, new List<List<int>> { consecutivePositions });  
+                    }  
+                }  
+                
+                // 注意：上面的else块包含一个错误，它不应该重置i。  
+                // 正确的做法是移除else块，因为当找到连续的字符串时，while循环已经处理了跳过它们。  
+            }  
+
+
+            return consecutiveOccurrences;
+
+        }
+
     }
 }

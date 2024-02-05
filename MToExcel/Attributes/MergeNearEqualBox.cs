@@ -8,7 +8,7 @@ namespace MToExcel.Attributes
     /// <summary>
     /// 是否合并大块相同值的单元格
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class,Inherited = false, AllowMultiple =false)]
+    [AttributeUsage(AttributeTargets.Class|AttributeTargets.Property,Inherited = false, AllowMultiple =false)]
     public class MergeNearEqualBox:Attribute
     {
         /// <summary>

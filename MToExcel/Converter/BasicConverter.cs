@@ -1060,8 +1060,20 @@ namespace MToExcel.Converter
                             
                             foreach(PropertyInfo pi in pros)
                             {
+
                                 header.CreateCell(i).SetCellValue(Convert.ToString(pi.DeclaringType.Name+":"+pi.Name));
                                 header.GetCell(i).CellStyle = style;
+
+                                //ReferenceType只支持HeaderName标签的嵌套
+                                if(pi.GetCustomAttribute(typeof(HeaderName))!=null)
+                                {
+                                    HeaderName name = (HeaderName)pi.GetCustomAttribute(typeof(HeaderName));
+
+                                    header.CreateCell(i).SetCellValue(name.getCustomProName());
+                                    header.GetCell(i).CellStyle = style;
+                                    
+                                }
+
                                 i++;
                             }
                             //如果打印了引用类型的属性，需要Continue跳一下循环，避免再次打印该类型（Type）的信息
@@ -1097,6 +1109,9 @@ namespace MToExcel.Converter
             {
                 RowNumber = CustomHeadRows.Value;
             }
+
+            int RowNumberCopy = RowNumber; //RowNumber副本给后面的合并列单元格用,[因为Rownumber要做遍历器会改变值]
+
             list.ForEach(item => {
 
                 IRow row = defaultSheet.CreateRow(RowNumber); //创建一行写一行的数据
@@ -1136,7 +1151,7 @@ namespace MToExcel.Converter
                             {
                                 if (property.GetValue(pro.GetValue(item)) == null)
                                 {
-                                    row.CreateCell(ColumnNumber).SetCellValue("空值属性");
+                                    row.CreateCell(ColumnNumber).SetCellValue("");
                                 }
                                 else
                                 {
@@ -1175,7 +1190,7 @@ namespace MToExcel.Converter
                     if (pro.GetValue(item) == null)   //在这里进行属性判空
                     {
                         
-                        row.CreateCell(ColumnNumber).SetCellValue("空值属性");
+                        row.CreateCell(ColumnNumber).SetCellValue("");
                         ColumnNumber++;
                     }
                     else if (isBasicArrayType(pro.GetValue(item).GetType())) //判断属性的类型是否为基础数据类型数组,这里先把数组的内容全写到一个格子中
@@ -1203,7 +1218,29 @@ namespace MToExcel.Converter
 
                         //打印基础类型数据
                         var value_cell =  row.CreateCell(ColumnNumber);
-                        value_cell.SetCellValue(Convert.ToString(pro.GetValue(item)));
+
+                        //在此处处理一下日期的格式问题
+
+                        if(pro.PropertyType==typeof(DateTime)||pro.PropertyType==typeof(DateTime?))
+                        {
+                            var date =  (DateTime)pro.GetValue(item);
+
+                            if(pro.GetCustomAttribute(typeof(DateTimeFormat))!=null) //在Property上的DateTimeFormat优先
+                            {
+                                var theformat =  (DateTimeFormat)pro.GetCustomAttribute(typeof(DateTimeFormat));
+                                value_cell.SetCellValue(date.ToString(theformat.format));
+                            }
+                            else
+                            {
+                                value_cell.SetCellValue(date.ToString(WrapperConverter.The_DateFormat));
+                            }
+                        }
+                        else
+                        {
+                            value_cell.SetCellValue(Convert.ToString(pro.GetValue(item)));
+                        } 
+
+                        
 
                         WrapperConverter.PutOnCellStyle(pro,value_cell,Version);
                         
@@ -1246,6 +1283,53 @@ namespace MToExcel.Converter
 
                 workbook.GetSheetAt(0).CreateFreezePane(freeze.FreezeStartCol,freeze.FreezeStartRow);
             }
+
+
+            #region 此处需要想一下如何做到合并单元格
+
+            typeof(T).GetProperties().ToList().ForEach(item=>{
+
+
+                if(item.GetCustomAttribute(typeof(MergeNearEqualBox))!=null)
+                {
+                    var MergeInfo = (MergeNearEqualBox)item.GetCustomAttribute(typeof(MergeNearEqualBox));
+
+                    //如果只合并列的相同值的单元格
+                    if(MergeInfo.OnlyCol)
+                    {
+                        
+
+                        var props =  typeof(T).GetProperties();
+                        
+                        /// <summary>
+                        /// 这里很重要,获取属性在类定义中的Index(该属性第几个被定义的)
+                        /// [确定开始结束列(同一)]
+                        /// </summary>
+                        /// <returns></returns>
+                        var index =  Array.IndexOf(props,props.FirstOrDefault(p=>p.Name == item.Name));
+
+                        var targetlist = list.Select(it=>typeof(T).GetProperties()[index].GetValue(it));
+
+                        var result =  ExcelToNPOI_Code.GetMergedPosition(targetlist.ToArray());
+
+                        foreach(var pair in result){
+
+                            foreach(var list in pair.Value)
+                            {
+                                CellRangeAddress temp = new CellRangeAddress(list.Min()+RowNumberCopy,list.Max()+RowNumberCopy,index,index);
+                                workbook.GetSheetAt(0).AddMergedRegion(temp);
+                            }
+                        }
+                    }
+                }
+
+
+            });
+
+            
+
+            #endregion
+
 
             return workbook;
         }

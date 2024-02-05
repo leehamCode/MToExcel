@@ -30,8 +30,12 @@ namespace MToExcel.Converter
 
         public static Dictionary<Type,CellStyleAttribute> CellStylePool = new Dictionary<Type, CellStyleAttribute>();
 
-        //样式对象池
-        public static Dictionary<CellStyleAttribute,ICellStyle> stylePool = new Dictionary<CellStyleAttribute,ICellStyle>();
+        /// <summary>
+        /// 全局输出的日期格式
+        /// </summary>
+        /// <value>默认为空</value>
+        public static string The_DateFormat {get;set;} = "yyyy/MM/dd HH:mm:ss";
+
         /// <summary>
         /// taget对象,用来具体的打表
         /// </summary>
@@ -57,6 +61,12 @@ namespace MToExcel.Converter
         /// <param name="type"></param>
         public void CheckAttribute(Type type)
         {
+            if(type.GetCustomAttribute(typeof(DateTimeFormat))!=null)
+            {
+                var date_attr = (DateTimeFormat)type.GetCustomAttribute(typeof(DateTimeFormat));
+                The_DateFormat = date_attr.format;
+            }
+
             PropertyInfo[] pros = type.GetProperties();
 
             foreach (PropertyInfo pro in pros)
@@ -365,8 +375,8 @@ namespace MToExcel.Converter
 
             }
 
-            //边框设置标签
-            if(info.GetCustomAttribute(typeof(BorderStyleAttribute))!=null)
+            //边框设置标签[可以有多个边框标签,这里判断稍有不同]
+            if(info.GetCustomAttributes(typeof(BorderStyleAttribute))!=null)
             {
                 var bordersets =  info.GetCustomAttributes(typeof(BorderStyleAttribute)).ToList();
 
